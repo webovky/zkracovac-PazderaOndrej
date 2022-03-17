@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+
+  <title>{%block title%}FlaskTemplate{%endblock%}</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favico.png') }}" />
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+</head>
+
+<body>
+
+  <div class="login">
+    {% if 'nick' in session %}
+      <p>Nick: <strong>{{ session.nick }}</strong>. <a href="{{url_for('logout')}}">LogOut</a></p>
+    {% else %}
+      <p><a href="{{url_for('login')}}">LogIn</a></p>
+    {% endif %}
+  </div>
+
+  <nav>
+  <p class="logo"><img src="{{ url_for('static', filename='flask-icon.png') }}" /></p>
+  <ul>
+    <li><a href="{{ url_for('index') }}">Index</a></li>
+    <li><a href="{{ url_for('add') }}">Nový uživatel</a></li>
+    <li><a href="{{ url_for('login') }}">LogIn</a></li>
+  </ul></nav>
+
+  {% with messages = get_flashed_messages(with_categories=True) %}
+  {% if messages %}
+  <div class="messages">
+    {% for category, message in messages %}
+      <p class="{{category}}">{{ message }}</p>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% endwith%}
+
+{% block obsah %}
+<main>
+
+<form method="post">
+<p class="url">URL pro zkrácení <br>
+  <input type="text" name="url" id="url" size="55"/><br>
+  <input type="submit" value="Zkrátit" />
+</p>
+</form>
+
+{% if shorcut %}
+  <p class="shorcut">Zkratka: <a href="{{ url_for('shorcut_get', shorcut=shorcut) }}">{{ request.root_url + shorcut }}</a></p>
+{% endif %}
+
+<br>
+<br>
+
+<p class="url">Zkrácené url</p>
+
+{% if 'nick' in session and addresses %}
+  <table>
+    <tr>
+      <th>URL</th>
+      <th>Zkratka</th>
+    </tr>
+  {% for addr in addresses %}
+    <tr>
+      <td>
+          <a href="{{addr.url}}">{{addr.url}}</a>
+      </td>
+      <td>
+        <a href="{{request.root_url+addr.shorcut}}">{{addr.shorcut}} </a>
+      </td>
+      <td>
+        <form action="{{ url_for('remove_post') }}" method="post">
+          <input type="hidden" name="rmid" value={{addr.id}}>
+          <input type="submit" name="rmbtn" value="Smazat">
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+  </table>
+{% endif %}
+
+
+
+
+
+
+
+
+
+{#{% filter markdown %}#}
+
+{#{% endfilter %}#}
+
+
+
+</main>
+{% endblock obsah %}
+
+<footer>
+{#{% filter markdown %}#}
+Užitečné odkazy: 
+
+* <a href="https://www.jakpsatweb.cz/html/">HTML</a>, 
+* <a href="https://www.jakpsatweb.cz/css/">CSS</a>, 
+* <a href="http://docs.python.org">Python</a>, 
+* <a href="https://flask.palletsprojects.com/">Flask</a>, 
+* <a href="https://jinja.palletsprojects.com/templates/">Jinja2</a>
+
+{#{% endfilter %}#}
+</footer>
+
+
+
+
+</body>
+</html>
